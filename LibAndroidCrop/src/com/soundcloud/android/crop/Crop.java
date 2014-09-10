@@ -1,12 +1,17 @@
 package com.soundcloud.android.crop;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.widget.Toast;
+
+import com.soundcloud.android.crop.util.VisibleForTesting;
 
 /**
  * Builder for crop Intents and utils for handling result
@@ -22,7 +27,6 @@ public class Crop {
         String ASPECT_Y = "aspect_y";
         String MAX_X = "max_x";
         String MAX_Y = "max_y";
-        String GUIDES = "show_guides";
         String ERROR = "error";
     }
 
@@ -90,9 +94,20 @@ public class Crop {
         activity.startActivityForResult(getIntent(activity), REQUEST_CROP);
     }
 
-    //VisibleForTesting
-    Intent getIntent(Activity activity) {
-        cropIntent.setClass(activity, CropImageActivity.class);
+    /**
+     * Send the crop Intent!
+     *
+     * @param context Context
+     * @param fragment Fragment that will receive result
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void start(Context context, Fragment fragment) {
+        fragment.startActivityForResult(getIntent(context), REQUEST_CROP);
+    }
+
+    @VisibleForTesting
+    Intent getIntent(Context context) {
+        cropIntent.setClass(context, CropImageActivity.class);
         return cropIntent;
     }
 
@@ -116,7 +131,7 @@ public class Crop {
     }
 
     /**
-     *  Utility method that starts an image picker. Often preceded a crop.
+     * Utility method that starts an image picker since that often precedes a crop
      *
      * @param activity Activity that will receive result
      */
